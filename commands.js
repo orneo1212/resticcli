@@ -22,7 +22,7 @@ function create_backup_of(location, repo, tags_string) {
         console.log("Backing up " + location);
         if (tags_string) console.log("Tagged: " + tags_string);
 
-        let tags = (tags_string ? tags_string : "").split(",").map((x) => "--tag " + x.trim());
+        let tags = (tags_string ? tags_string : "").split(",").map((x) => x ? "--tag " + x.trim() : "");
         call_restic_on(repo, "backup", "--one-file-system", location, ...tags).then((code) => {
             resolve(code);
         });
