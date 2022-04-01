@@ -34,7 +34,7 @@ program.command('backup')
       process.exit(1);
     }
     let locations;
-    if (location) locations = [location];
+    if (location) locations = [{ path: location }];
     else locations = config.locations;
     if (!locations) {
       console.log("No backup locations");
