@@ -10,7 +10,7 @@ function create_backup_of(location, repo, tags_string) {
             RESTIC_PASSWORD: repo.password,
             AWS_ACCESS_KEY_ID: repo.remote_user,
             AWS_SECRET_ACCESS_KEY: repo.remote_password,
-        }, "--repo=" + repo.location, "backup", location, ...tags);
+        }, "--repo=" + repo.location, "backup", "--one-file-system", location, ...tags);
         command.on("exit", function (code) {
             resolve(code);
         });
