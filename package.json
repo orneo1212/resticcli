@@ -1,0 +1,25 @@
+{
+  "name": "resticcli",
+  "version": "0.1",
+  "main": "index.js",
+  "author": "orneo1212 <orneo1212@gmail.com>",
+  "license": "MIT",
+  "private": null,
+  "bin": "index.js",
+  "scripts": {
+    "build": "pkg -C Brotli ."
+  },
+  "dependencies": {
+    "commander": "^9.1.0"
+  },
+  "devDependencies": {
+    "pkg": "^5.5.2"
+  },
+  "pkg": {
+    "outputPath": "build",
+    "targets": [
+      "node16-linux-x64",
+      "node16-win-x64"
+    ]
+  }
+}
