@@ -1,7 +1,7 @@
 const { program, Command } = require('commander');
 const { restic } = require('./api');
 const { add_repository, remove_repository, list_repositories } = require('./repositories');
-const { create_backup_of, clean_repository } = require('./commands');
+const { create_backup_of, clean_repository, check_repository } = require('./commands');
 const Configuration = require('./configuration');
 
 let config = new Configuration();
@@ -61,6 +61,18 @@ program.command('clean')
       process.exit(1);
     }
     clean_repository(repo);
+  });
+
+// CHECK
+program.command('check')
+  .description('Check data in repository')
+  .action((params) => {
+    let repo = config.repositories[0];
+    if (!repo) {
+      console.log("There no repositories added to be managed. see `resticcli help repo`");
+      process.exit(1);
+    }
+    check_repository(repo);
   });
 
 // Repositories Managment
