@@ -1,7 +1,7 @@
 const { program, Command } = require('commander');
 const { restic } = require('./api');
 const { add_repository, remove_repository, list_repositories } = require('./repositories');
-const { create_backup_of, clean_repository, check_repository } = require('./commands');
+const { call_restic_on, create_backup_of, clean_repository, check_repository } = require('./commands');
 const Configuration = require('./configuration');
 
 let config = new Configuration();
@@ -20,11 +20,7 @@ program.command('snapshots')
       console.log("There no repositories added to be managed. see `resticcli help repo`");
       process.exit(1);
     }
-    restic({
-      RESTIC_PASSWORD: repo.password,
-      AWS_ACCESS_KEY_ID: repo.remote_user,
-      AWS_SECRET_ACCESS_KEY: repo.remote_password,
-    }, "--repo=" + repo.location, "snapshots", "--group-by=paths", "-c");
+    call_restic_on(repo, "snapshots", "--group-by=paths", "-c");
   });
 
 // BACKUP
