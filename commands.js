@@ -12,6 +12,10 @@ function call_restic_with_both(repo, repo2, ...args) {
         }
         if (repo2) {
             env.RESTIC_PASSWORD2 = repo2.password;
+            if (repo2.location.toLowerCase().indexOf("s3:http") !== -1) {
+                env.AWS_ACCESS_KEY_ID = repo2.remote_user;
+                env.AWS_SECRET_ACCESS_KEY = repo2.remote_password;
+            }
         }
         let command = restic(env, "--repo=" + repo.location, ...args);
         command.on("exit", function (code) {
