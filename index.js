@@ -1,5 +1,4 @@
 const { program, Command } = require('commander');
-const { restic } = require('./api');
 const { add_repository, remove_repository, list_repositories } = require('./repositories');
 const { call_restic_on, create_backup_of, clean_repository, check_repository } = require('./commands');
 const Configuration = require('./configuration');
@@ -8,14 +7,28 @@ let config = new Configuration();
 
 program
   .description("Restic CLI interface for multi-repository managment")
-  .version("0.1.0");
+  .version("0.1.1");
+
+// select
+program.command('select')
+  .description('Select managed repository')
+  .argument("[repo_name]")
+  .action((repo_name) => {
+    let repo = config.get_selected_repo(repo_name);
+    if (!repo) {
+      console.log("There no repository " + repo_name);
+      process.exit(1);
+    }
+    config.selected_repo = repo_name;
+    config.save();
+  });
 
 // SNAPSHOTS
 program.command('snapshots')
   .description('Show snapshots')
   .argument("[params]")
   .action((params) => {
-    let repo = config.repositories[0];
+    let repo = config.get_selected_repo();
     if (!repo) {
       console.log("There no repositories added to be managed. see `resticcli help repo`");
       process.exit(1);
@@ -28,7 +41,7 @@ program.command('backup')
   .description('Create backup of added locations or specified one ')
   .argument("[location]")
   .action(async (location) => {
-    let repo = config.repositories[0];
+    let repo = config.get_selected_repo();
     if (!repo) {
       console.log("There no repositories added to be managed. see `resticcli help repo`");
       process.exit(1);
@@ -51,7 +64,7 @@ program.command('backup')
 program.command('clean')
   .description('Cleanup repository')
   .action((params) => {
-    let repo = config.repositories[0];
+    let repo = config.get_selected_repo();
     if (!repo) {
       console.log("There no repositories added to be managed. see `resticcli help repo`");
       process.exit(1);
@@ -63,7 +76,7 @@ program.command('clean')
 program.command('check')
   .description('Check data in repository')
   .action((params) => {
-    let repo = config.repositories[0];
+    let repo = config.get_selected_repo();
     if (!repo) {
       console.log("There no repositories added to be managed. see `resticcli help repo`");
       process.exit(1);

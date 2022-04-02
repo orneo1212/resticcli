@@ -8,6 +8,7 @@ class Configuration {
         this.filename = filename;
         this.repositories = [];
         this.locations = {};
+        this.selected_repo = "";
         this._cfg = this.loadConfig();
         this.parseConfig(this._cfg);
     }
@@ -21,6 +22,7 @@ class Configuration {
 
         if (!config.repositories) config.repositories = [];
         if (!config.locations) config.locations = [];
+        if (!config.selected) config.selected = "";
         return config;
     }
 
@@ -36,11 +38,22 @@ class Configuration {
         if (config.locations) {
             this.locations = config.locations;
         }
+        // Make sure selected repository exists
+        if (config.selected && !this.repositories.find((x) => x.name == config.selected)) config.selected = "";
+        else this.selected_repo = config.selected;
+
+        // Select repository when no selected
+        if (!config.selected) {
+            if (this.repositories.length > 0) {
+                this.selected_repo = this.repositories[0].name;
+            }
+        }
     }
 
     save() {
         this._cfg.repositories = this.repositories;
         this._cfg.locations = this.locations;
+        this._cfg.selected = this.selected_repo;
         this.saveConfig(this._cfg);
     }
 
@@ -67,6 +80,11 @@ class Configuration {
             this.save();
             return true;
         }
+    }
+
+    get_selected_repo(repo_name = "") {
+        let rname = repo_name ? repo_name : this.selected_repo;
+        return this.repositories.find((x) => x.name == rname);
     }
 }
 
