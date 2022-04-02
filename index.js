@@ -116,6 +116,20 @@ program.command('copy')
     copy_repository(repo, repo2, ...params);
   });
 
+// RESTIC
+program.command('restic')
+  .description('Access orginal restic binary')
+  .argument("[params...]", "Arguments to restic")
+  .allowUnknownOption()
+  .action((params) => {
+    let repo = config.get_selected_repo();
+    if (!repo) {
+      console.log("There no repositories added to be managed. see `resticcli help repo`");
+      process.exit(1);
+    }
+    call_restic_on(repo, ...params);
+  });
+
 // Repositories Managment
 let repos = new Command("repo").description("Manage multiple restic repositories");
 
