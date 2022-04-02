@@ -1,6 +1,6 @@
 {
   "name": "resticcli",
-  "version": "0.1",
+  "version": "0.1.3",
   "main": "index.js",
   "author": "orneo1212 <orneo1212@gmail.com>",
   "license": "MIT",

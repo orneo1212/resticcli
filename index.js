@@ -7,7 +7,7 @@ let config = new Configuration();
 
 program
   .description("Restic CLI interface for multi-repository managment")
-  .version("0.1.1")
+  .version("0.1.3")
   .addHelpText('after', "\nSelected repository: " + (config.get_selected_repo() ? config.get_selected_repo().name : ""))
   .configureHelp({ sortSubcommands: true });
 
