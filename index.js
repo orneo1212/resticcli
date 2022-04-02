@@ -9,7 +9,7 @@ program
   .description("Restic CLI interface for multi-repository managment")
   .version("0.1.1");
 
-// select
+// SELECT
 program.command('select')
   .description('Select managed repository')
   .argument("[repo_name]")
@@ -19,7 +19,12 @@ program.command('select')
       console.log("There no repository " + repo_name);
       process.exit(1);
     }
+    if (!repo_name) {
+      console.log("Choose from: " + (config.repositories.map(x => x.name).join(", ")));
+      process.exit(1);
+    }
     config.selected_repo = repo_name;
+    console.log('Selected `' + repo_name + "` repository");
     config.save();
   });
 
