@@ -22,7 +22,10 @@ program.command('select')
       process.exit(1);
     }
     if (!repo_name) {
-      console.log("Choose from: " + (config.repositories.map(x => x.name).join(", ")));
+      console.log("Choose from: " + (config.repositories.map(x => {
+        if (x.name != repo.name) return "`" + x.name + "`";
+        else return "(`" + x.name + "`)";
+      }).join(" ")));
       process.exit(1);
     }
     config.selected_repo = repo_name;
