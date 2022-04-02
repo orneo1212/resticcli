@@ -1,6 +1,6 @@
 const { program, Command } = require('commander');
 const { add_repository, remove_repository, list_repositories } = require('./repositories');
-const { call_restic_on, create_backup_of, clean_repository, check_repository } = require('./commands');
+const { call_restic_on, create_backup_of, clean_repository, check_repository, copy_repository } = require('./commands');
 const Configuration = require('./configuration');
 
 let config = new Configuration();
@@ -82,6 +82,30 @@ program.command('check')
       process.exit(1);
     }
     check_repository(repo);
+  });
+
+// COPY
+program.command('copy')
+  .description('Copy snapshots into specified repository')
+  .argument("<repo_name>")
+  .action((repo_name) => {
+    if (config.repositories.length < 2) {
+      console.log("There no at least two repositories added to be managed. see `resticcli help repo`");
+      process.exit(1);
+    }
+    let repo = config.get_selected_repo();
+    let repo2 = config.get_selected_repo(repo_name);
+
+    if (!repo || !repo2) {
+      console.log("Invalid repository specified");
+      process.exit(1);
+    }
+
+    if (repo === repo2) {
+      console.log("Can't copy to same repo");
+      process.exit(1);
+    }
+    copy_repository(repo, repo2);
   });
 
 // Repositories Managment
