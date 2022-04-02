@@ -69,11 +69,11 @@ function check_repository(repo) {
     });
 }
 
-function copy_repository(source_repo, target_repo) {
+function copy_repository(source_repo, target_repo, ...params) {
     console.log("Copying repository " + source_repo.name + " to repository " + target_repo.name);
 
     return new Promise((resolve) => {
-        call_restic_with_both(source_repo, target_repo, "copy", "--repo2=" + target_repo.location)
+        call_restic_with_both(source_repo, target_repo, "copy", "--repo2=" + target_repo.location, ...params)
             .then((code) => {
                 resolve(code);
             });

@@ -26,14 +26,15 @@ program.command('select')
 // SNAPSHOTS
 program.command('snapshots')
   .description('Show snapshots')
-  .argument("[params]")
+  .argument("[params...]", "Optional arguments to restic `snapshots` command")
+  .allowUnknownOption()
   .action((params) => {
     let repo = config.get_selected_repo();
     if (!repo) {
       console.log("There no repositories added to be managed. see `resticcli help repo`");
       process.exit(1);
     }
-    call_restic_on(repo, "snapshots", "--group-by=paths", "-c");
+    call_restic_on(repo, "snapshots", "--group-by=paths", "-c", ...params);
   });
 
 // BACKUP
@@ -88,7 +89,9 @@ program.command('check')
 program.command('copy')
   .description('Copy snapshots into specified repository')
   .argument("<repo_name>")
-  .action((repo_name) => {
+  .argument("[params...]", "Optional arguments to restic `copy` command")
+  .allowUnknownOption()
+  .action((repo_name, params) => {
     if (config.repositories.length < 2) {
       console.log("There no at least two repositories added to be managed. see `resticcli help repo`");
       process.exit(1);
@@ -105,7 +108,7 @@ program.command('copy')
       console.log("Can't copy to same repo");
       process.exit(1);
     }
-    copy_repository(repo, repo2);
+    copy_repository(repo, repo2, ...params);
   });
 
 // Repositories Managment
