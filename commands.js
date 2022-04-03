@@ -1,4 +1,4 @@
-const { restic } = require('./api');
+const { restic, restic_interactive } = require('./api');
 
 function call_restic_with_both(repo, repo2, ...args) {
     return new Promise((resolve) => {
@@ -17,7 +17,9 @@ function call_restic_with_both(repo, repo2, ...args) {
                 env.AWS_SECRET_ACCESS_KEY = repo2.remote_password;
             }
         }
-        let command = restic(env, "--repo=" + repo.location, ...args);
+        let command;
+        if (repo.interactive) command = restic_interactive(env, "--repo=" + repo.location, ...args);
+        else command = restic(env, "--repo=" + repo.location, ...args);
         command.on("exit", function (code) {
             resolve(code);
         });

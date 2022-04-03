@@ -19,5 +19,12 @@ module.exports = {
         });
 
         return command;
+    },
+
+    restic_interactive: function restic_interactive(env = {}, ...args) {
+        let tmpenv = process.env;
+        Object.assign(tmpenv, env);
+        command = spawn(RESTIC_BINARY, args, { shell: true, env: tmpenv, stdio: 'inherit' });
+        return command;
     }
 };

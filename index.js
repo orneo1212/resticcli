@@ -132,6 +132,7 @@ program.command('restic')
       console.log("There no repositories added to be managed. see `resticcli help repo`");
       process.exit(1);
     }
+    repo.interactive = true;
     call_restic_on(repo, ...params);
   });
 
