@@ -7,7 +7,7 @@ let config = new Configuration();
 
 program
   .description("Restic CLI interface for multi-repository managment")
-  .version("0.1.3")
+  .version("0.1.4")
   .addHelpText('after', "\nSelected repository: " + (config.get_selected_repo() ? config.get_selected_repo().name : ""))
   .configureHelp({ sortSubcommands: true });
 
@@ -134,6 +134,21 @@ program.command('restic')
     }
     repo.interactive = true;
     call_restic_on(repo, ...params);
+  });
+
+// MOUNT
+program.command('mount')
+  .description('mount repository to browse it')
+  .argument("[mount_point]", "Mount point")
+  .allowUnknownOption()
+  .action((mount_point) => {
+    let repo = config.get_selected_repo();
+    if (!repo) {
+      console.log("There no repositories added to be managed. see `resticcli help repo`");
+      process.exit(1);
+    }
+    repo.interactive = true;
+    call_restic_on(repo, "mount", mount_point);
   });
 
 // Repositories Managment
