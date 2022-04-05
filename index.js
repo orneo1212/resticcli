@@ -1,6 +1,6 @@
 const { program, Command } = require('commander');
 const { add_repository, remove_repository, list_repositories } = require('./repositories');
-const { call_restic_on, create_backup_of, clean_repository, check_repository, copy_repository } = require('./commands');
+const { call_restic_on, call_restic_with_both, create_backup_of, clean_repository, check_repository, copy_repository } = require('./commands');
 const Configuration = require('./configuration');
 
 let config = new Configuration();
@@ -132,7 +132,6 @@ program.command('restic')
       console.log("There no repositories added to be managed. see `resticcli help repo`");
       process.exit(1);
     }
-    repo.interactive = true;
     call_restic_on(repo, ...params);
   });
 
@@ -140,15 +139,39 @@ program.command('restic')
 program.command('mount')
   .description('mount repository to browse it')
   .argument("[mount_point]", "Mount point")
-  .allowUnknownOption()
   .action((mount_point) => {
     let repo = config.get_selected_repo();
     if (!repo) {
       console.log("There no repositories added to be managed. see `resticcli help repo`");
       process.exit(1);
     }
-    repo.interactive = true;
     call_restic_on(repo, "mount", mount_point);
+  });
+
+// INIT
+program.command('init')
+  .description('Initialize new repository in specified location - based on currelnt choosen repository')
+  .argument("<repo_name>", "Repository name")
+  .argument("<repo_location>", "New repository location")
+  .action((repo_name, repo_location) => {
+    let repo = config.get_selected_repo();
+    if (!repo) {
+      console.log("There no repositories added to be managed. see `resticcli help repo`");
+      process.exit(1);
+    }
+    if (config.get_selected_repo(repo_name)) {
+      console.log("Repository " + repo_name + " already added to resticcli. Choose another name");
+      process.exit(1);
+    }
+    reponew = { name: repo_name, location: repo_location };
+    call_restic_with_both(reponew, repo, "init", repo_location).then((code) => {
+      // Repository created. add it to config and save
+      if (code == 0) {
+        config.repositories.push(reponew);
+        config.save();
+        console.log("Repository created at " + repo_location);
+      }
+    });
   });
 
 // Repositories Managment
