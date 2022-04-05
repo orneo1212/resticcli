@@ -2,12 +2,12 @@ const { program, Command } = require('commander');
 const { add_repository, remove_repository, list_repositories } = require('./repositories');
 const { call_restic_on, call_restic_with_both, create_backup_of, clean_repository, check_repository, copy_repository } = require('./commands');
 const Configuration = require('./configuration');
-
+const pjson = require('./package.json');
 let config = new Configuration();
 
 program
   .description("Restic CLI interface for multi-repository managment")
-  .version("0.1.4")
+  .version(pjson.version)
   .addHelpText('after', "\nSelected repository: " + (config.get_selected_repo() ? config.get_selected_repo().name : ""))
   .configureHelp({ sortSubcommands: true });
 
