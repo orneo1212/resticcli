@@ -1,4 +1,4 @@
-const { restic, restic_interactive } = require('./api');
+const { restic, restic_interactive, restic_raw } = require('./api');
 
 function call_restic_with_both(repo, repo2, ...args) {
     return new Promise((resolve) => {
@@ -33,6 +33,28 @@ function call_restic_with_both(repo, repo2, ...args) {
 
 function call_restic_on(repo, ...args) {
     return call_restic_with_both(repo, null, ...args);
+}
+
+function call_restic_json(repo, ...args) {
+    return new Promise((resolve) => {
+        let env = {};
+        if (repo.password) env.RESTIC_PASSWORD = repo.password;
+
+        // S3 Backend 
+        if (repo.location.toLowerCase().indexOf("s3:http") !== -1) {
+            env.AWS_ACCESS_KEY_ID = repo.remote_user;
+            env.AWS_SECRET_ACCESS_KEY = repo.remote_password;
+        }
+        let command = restic_raw(env, "--json", "--repo=" + repo.location, ...args);
+        let data = [];
+
+        command.stdout.on("data", function (code) {
+            data.push(code);
+        });
+        command.on("exit", function (code) {
+            resolve({ code: code, json: JSON.parse(data.join("")) });
+        });
+    });
 }
 
 function create_backup_of(location, repo, tags_string) {
@@ -94,6 +116,7 @@ function copy_repository(source_repo, target_repo, ...params) {
 module.exports = {
     call_restic_on,
     call_restic_with_both,
+    call_restic_json,
     create_backup_of,
     clean_repository,
     check_repository,
