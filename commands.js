@@ -88,6 +88,7 @@ function copy_repository(source_repo, target_repo, ...params) {
 
 module.exports = {
     call_restic_on,
+    call_restic_with_both,
     create_backup_of,
     clean_repository,
     check_repository,
