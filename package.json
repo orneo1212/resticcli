@@ -4,7 +4,7 @@
   "main": "index.js",
   "author": "orneo1212 <orneo1212@gmail.com>",
   "license": "MIT",
-  "private": null,
+  "private": false,
   "bin": "index.js",
   "scripts": {
     "build": "pkg -C Brotli ."
