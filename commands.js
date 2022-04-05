@@ -18,10 +18,13 @@ function call_restic_with_both(repo, repo2, ...args) {
             }
         }
         let command;
-        if (repo.interactive) {
+
+        // interactive mode by default
+        if (repo.noninteractive) command = restic(env, "--repo=" + repo.location, ...args);
+        else {
             delete repo.interactive;
             command = restic_interactive(env, "--repo=" + repo.location, ...args);
-        } else command = restic(env, "--repo=" + repo.location, ...args);
+        }
         command.on("exit", function (code) {
             resolve(code);
         });
