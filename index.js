@@ -1,8 +1,10 @@
 const { program, Command } = require('commander');
 const { add_repository, remove_repository, list_repositories } = require('./repositories');
-const { call_restic_on, call_restic_with_both, create_backup_of, clean_repository, check_repository, copy_repository } = require('./commands');
+const { call_restic_on, call_restic_with_both, create_backup_of, clean_repository, check_repository, copy_repository, call_restic_json } = require('./commands');
 const Configuration = require('./configuration');
 const pjson = require('./package.json');
+const dayjs = require('dayjs');
+
 let config = new Configuration();
 
 program
@@ -38,13 +40,27 @@ program.command('snapshots')
   .description('Show snapshots')
   .argument("[params...]", "Optional arguments to restic `snapshots` command")
   .allowUnknownOption()
-  .action((params) => {
+  .action(async (params) => {
     let repo = config.get_selected_repo();
     if (!repo) {
       console.log("There no repositories added to be managed. see `resticcli help repo`");
       process.exit(1);
     }
-    call_restic_on(repo, "snapshots", "--group-by=paths", "-c", ...params);
+    //call_restic_on(repo, "snapshots", "--group-by=paths", "-c", ...params);
+    let data = await call_restic_json(repo, "snapshots", "--group-by=paths", "-c", ...params);
+    if (data.code == 0) {
+      for (group of data.json) {
+        let paths = group.group_key.paths.join(", ");
+        console.log(paths);
+        console.log("".padStart(paths.length, "="));
+        for (snap of group.snapshots) {
+          let date = dayjs(snap.time).format('YYYY-MM-DD hh:mm:ss');
+          let tags = snap.tags ? snap.tags.join(", ") : "";
+          console.log(snap.short_id + "  " + date + "  " + snap.hostname + "  " + tags);
+        }
+        console.log();
+      }
+    }
   });
 
 // BACKUP

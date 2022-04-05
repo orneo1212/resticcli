@@ -1,6 +1,6 @@
 {
   "name": "resticcli",
-  "version": "0.1.4",
+  "version": "0.1.5",
   "main": "index.js",
   "author": "orneo1212 <orneo1212@gmail.com>",
   "license": "MIT",
@@ -10,7 +10,8 @@
     "build": "pkg -C Brotli ."
   },
   "dependencies": {
-    "commander": "^9.1.0"
+    "commander": "^9.1.0",
+    "dayjs": "^1.11.0"
   },
   "devDependencies": {
     "pkg": "^5.5.2"
