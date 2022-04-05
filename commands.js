@@ -3,7 +3,7 @@ const { restic, restic_interactive } = require('./api');
 function call_restic_with_both(repo, repo2, ...args) {
     return new Promise((resolve) => {
         let env = {};
-        env.RESTIC_PASSWORD = repo.password;
+        if (repo.password) env.RESTIC_PASSWORD = repo.password;
 
         // S3 Backend 
         if (repo.location.toLowerCase().indexOf("s3:http") !== -1) {
@@ -11,15 +11,17 @@ function call_restic_with_both(repo, repo2, ...args) {
             env.AWS_SECRET_ACCESS_KEY = repo.remote_password;
         }
         if (repo2) {
-            env.RESTIC_PASSWORD2 = repo2.password;
+            if (repo2.password) env.RESTIC_PASSWORD2 = repo2.password;
             if (repo2.location.toLowerCase().indexOf("s3:http") !== -1) {
                 env.AWS_ACCESS_KEY_ID = repo2.remote_user;
                 env.AWS_SECRET_ACCESS_KEY = repo2.remote_password;
             }
         }
         let command;
-        if (repo.interactive) command = restic_interactive(env, "--repo=" + repo.location, ...args);
-        else command = restic(env, "--repo=" + repo.location, ...args);
+        if (repo.interactive) {
+            delete repo.interactive;
+            command = restic_interactive(env, "--repo=" + repo.location, ...args);
+        } else command = restic(env, "--repo=" + repo.location, ...args);
         command.on("exit", function (code) {
             resolve(code);
         });
