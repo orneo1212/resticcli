@@ -49,13 +49,17 @@ program.command('snapshots')
     //call_restic_on(repo, "snapshots", "--group-by=paths", "-c", ...params);
     let data = await call_restic_json(repo, "snapshots", "--group-by=paths", "-c", ...params);
     if (data.code == 0) {
+      // Iterate over each group
       for (group of data.json) {
-        let paths = group.group_key.paths.join(", ");
+        let group_key = group.group_key.paths || group.group_key.tags || [];
+        let paths = group_key.join(", ");
         console.log(paths);
         console.log("".padStart(paths.length, "="));
         for (snap of group.snapshots) {
           let date = dayjs(snap.time).format('YYYY-MM-DD hh:mm:ss');
           let tags = snap.tags ? snap.tags.join(", ") : "";
+          // Show tags or paths as last 
+          if (group.group_key.tags) tags = snap.paths.join(", ");
           console.log(snap.short_id + "  " + date + "  " + snap.hostname + "  " + tags);
         }
         console.log();
