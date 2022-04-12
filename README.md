@@ -1,7 +1,7 @@
 # resticcli
-Restic CLI interface for multi-repository managment
+[Restic](https://github.com/restic/restic) CLI interface for multi-repository managment
 ```
-Usage: index [options] [command]
+Usage: index [options] [command] 
 
 Restic CLI interface for multi-repository managment
 
